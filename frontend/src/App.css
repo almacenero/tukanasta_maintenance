@@ -40,3 +40,16 @@
 .Contenedor {
   border-style: solid;
 }
+
+.Icon_color {
+  color: #bbbfca;
+}
+
+.Contenedor_Icono {
+  margin-top: 3em;
+}
+
+.Contenedor_Texto {
+  margin-top: 3em;
+  color: #495464;
+}
