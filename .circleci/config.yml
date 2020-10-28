@@ -1,0 +1,87 @@
+# Javascript Node CircleCI 2.0 configuration file
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2.1
+
+executors:
+  my-executor:
+    docker:
+      - image: circleci/node:10.15.3
+    working_directory: ~/TuKanasta
+
+jobs:
+  build:
+    executor: my-executor
+    steps:
+      - checkout
+  front-end-test:
+    executor: my-executor
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - m2-{{ checksum "frontend/package.json" }}
+            - m2- # used if checksum fail
+      - run:
+          name: access-frontend-dir-npm-install
+          command: "cd frontend/; ls -la; npm install"
+      - save_cache:
+          paths:
+            - frontend/node_modules
+          key: m2-{{ checksum "frontend/package.json" }}
+      - run:
+          name: test
+          command: "cd frontend/; ls -la; npm test"
+  development-deploy:
+    executor: my-executor
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "a7:68:fe:9a:77:ff:2e:be:6b:d6:c0:8f:56:32:43:b1"
+      - run:
+          name: ssh-access-digitalocean
+          command: "sudo ./deploy.sh"
+  master-deploy:
+    executor: my-executor
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "a7:68:fe:9a:77:ff:2e:be:6b:d6:c0:8f:56:32:43:b1"
+      - run:
+          name: ssh-access-google-cloud-deploy-production
+          command: "sudo ./deploy_production.sh"
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - development
+                - master
+      - front-end-test:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - development
+                - master
+      - development-deploy:
+          filters:
+            branches:
+              only:
+                - development
+                - master
+          requires:
+            - front-end-test
+      - master-deploy:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - development-deploy
