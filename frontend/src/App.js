@@ -1,24 +1,14 @@
-import logo from "./logo.svg";
 import "./App.css";
+import { Col, Row } from "reactstrap";
+import logo from "./images/logo.png";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Reactss
-        </a>
-      </header>
-    </div>
+    <Row className="Contenedor justify-content-center">
+      <Col xs={2} className="Contenedor">
+        <img src={logo} alt="log" height="100" width="210"></img>
+      </Col>
+    </Row>
   );
 }
 
